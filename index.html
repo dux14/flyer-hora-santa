@@ -79,11 +79,9 @@ button:hover{filter:brightness(1.05)}
 <body>
 
 <header class="top">
-  <div class="brand">SENIORS BOGOTÁ<small>Editor de flyer · 1024 × 1024</small></div>
+  <div class="brand"><span id="brandMark" aria-label="SENIORS BOGOTÁ">SENIORS BOGOTÁ</span><small>Editor de flyer · 1024 × 1024</small></div>
   <div class="actions">
     <input type="file" id="file" accept="image/*" hidden>
-    <input type="file" id="fontFile" accept=".ttf,.otf,.woff,.woff2,font/*" hidden>
-    <button id="btnFont">Cargar fuente del logotipo</button>
     <button id="btnLoad">Cargar foto de fondo</button>
     <button id="btnExport" class="primary">Descargar PNG</button>
   </div>
@@ -133,6 +131,27 @@ const hasLS='letterSpacing' in ctx, hasFS='fontStretch' in ctx;
 /* ---------- path helpers ---------- */
 const getP=p=>p.split('.').reduce((o,k)=>o[k],st);
 const setP=(p,v)=>{const ks=p.split('.');const last=ks.pop();ks.reduce((o,k)=>o[k],st)[last]=v};
+
+/* ---------- logotype: outlines of SENIORS BOGOTÁ drawn with Monohipster (Monocromo) ---------- */
+const LOGO_G={"S":{"d":"M278 296Q240 306 204.0 323.5Q168 341 140.0 367.0Q112 393 94.5 427.5Q77 462 77 507Q77 549 93.5 586.5Q110 624 139.0 651.5Q168 679 207.0 695.0Q246 711 291 711Q329 711 359.5 704.5Q390 698 415.0 688.0Q440 678 461.0 665.5Q482 653 501 641L524 626L451 507L426 523Q409 534 394.5 543.0Q380 552 364.5 558.0Q349 564 331.5 567.5Q314 571 291 571Q278 571 264.5 566.5Q251 562 240.5 554.0Q230 546 223.5 534.5Q217 523 217 509Q217 487 227.5 473.5Q238 460 254.5 451.5Q271 443 290.5 437.5Q310 432 327 427Q426 394 482 334Q537 273 537 197Q537 160 522.0 123.5Q507 87 481 58Q418 -14 320 -14Q297 -14 266.0 -11.0Q235 -8 197 3Q100 33 30 109L132 205Q160 175 188.5 159.0Q217 143 242.5 135.5Q268 128 288.0 127.0Q308 126 320 126Q342 126 356.5 134.5Q371 143 380.0 154.5Q389 166 393.0 178.0Q397 190 397 197Q397 226 366.0 251.0Q335 276 278 296Z","a":567},"E":{"d":"M547 561H220V512H490V372H220V327H490V187H220V140H544V0H80V701H547Z","a":592},"N":{"d":"M619 0 411 215 128 0H85V701H129L516 309V701H656V0ZM225 255 311 319 225 409Z","a":736},"I":{"d":"M85 421H160V561H85V701H374V561H300V421H374L344 281H300V140H374V0H85V140H160V281H115Z","a":459},"O":{"d":"M413 714Q488 714 554.0 685.5Q620 657 669.5 607.5Q719 558 747.5 492.0Q776 426 776 351Q776 276 747.5 210.0Q719 144 669.5 94.5Q620 45 554.0 16.5Q488 -12 413 -12Q338 -12 272.0 16.5Q206 45 156.5 94.5Q107 144 78.5 210.0Q50 276 50 351Q50 426 78.5 492.0Q107 558 156.5 607.5Q206 657 272.0 685.5Q338 714 413 714ZM413 570Q377 570 344.0 559.0Q311 548 284.0 528.0Q257 508 236.5 480.5Q216 453 205 421H620Q609 453 589.0 480.5Q569 508 542.0 528.0Q515 548 482.0 559.0Q449 570 413 570ZM413 132Q449 132 482.0 143.0Q515 154 542.0 174.0Q569 194 589.0 221.0Q609 248 620 281H205Q216 248 236.5 221.0Q257 194 284.0 174.0Q311 154 344.0 143.0Q377 132 413 132Z","a":826},"R":{"d":"M307 701Q350 701 388.5 684.5Q427 668 455.5 639.0Q484 610 500.5 571.5Q517 533 517 490Q517 423 480.5 370.0Q444 317 384 294L565 0H408L247 280H220V0H80V420H171L80 561V701ZM307 420Q336 420 356.5 440.5Q377 461 377 490Q377 519 356.5 540.0Q336 561 307 561H220Z","a":585},"B":{"d":"M271 700Q313 700 350.5 684.0Q388 668 416.0 640.0Q444 612 460.0 574.5Q476 537 476 495Q476 463 466.5 434.0Q457 405 440 380Q478 351 500.5 307.0Q523 263 523 212Q523 168 506.5 129.0Q490 90 461.0 61.5Q432 33 393.5 16.5Q355 0 311 0H80V423H143L80 583V700ZM265 423Q280 423 294.5 429.0Q309 435 320.5 445.5Q332 456 339.0 471.0Q346 486 346 504Q346 541 320.5 562.0Q295 583 265 583H204ZM309 119Q344 119 369.5 143.5Q395 168 395 203Q395 239 369.5 263.5Q344 288 309 288H207V119Z","a":568},"G":{"d":"M547 531Q519 549 488.5 557.5Q458 566 426 566Q384 566 344.5 551.5Q305 537 274.5 509.0Q244 481 225.0 440.5Q206 400 206 349Q206 297 224.5 256.0Q243 215 274.0 187.0Q305 159 344.5 144.0Q384 129 425 129Q460 129 493.0 139.5Q526 150 555 173V431H695V109Q633 41 563.5 13.5Q494 -14 413 -14Q338 -14 272.0 14.5Q206 43 156.5 92.5Q107 142 78.5 208.0Q50 274 50 349Q50 424 78.5 490.0Q107 556 156.5 605.5Q206 655 272.0 683.5Q338 712 413 712Q476 712 532.5 691.5Q589 671 637 635Z","a":745},"T":{"d":"M549 701V561L355 486V0H215V486L20 561V701L284 611Z","a":569},"\u00c1":{"d":"M255 191 159 0H20V37L358 701H392L730 37V0H591L375 431L332 346L490 37V0H351ZM236 802 398 942 513 860 296 759Z","a":750}};
+const LOGO_K={"IR": -5, "OG": -10, "ON": -10, "OO": -10, "OS": -20, "RG": -10, "TO": -10};
+for(const c in LOGO_G)LOGO_G[c].p=new Path2D(LOGO_G[c].d);
+// Monohipster: units per em 1000, cap height 701
+function drawLogo(str,{cap,track,x,y,align}){
+  const size=cap/0.701, s=size/1000, tp=track/1000*size, ch=[...str.toUpperCase()];
+  const adv=(c,i)=>{const gl=LOGO_G[c];let a;if(gl)a=gl.a*s;else{setFont('barlow',500,size);a=ctx.measureText(c).width}
+    return a+((LOGO_K[c+(ch[i+1]||'')]||0)*s)};
+  let w=0;ch.forEach((c,i)=>{w+=adv(c,i)+(i<ch.length-1?tp:0)});
+  const left=align==='center'?x-w/2:x;let cx=left;
+  ch.forEach((c,i)=>{const gl=LOGO_G[c];
+    if(gl){ctx.save();ctx.translate(cx,y);ctx.scale(s,-s);ctx.fill(gl.p);ctx.restore()}
+    else{setFont('barlow',500,size);ctx.fillText(c,cx,y)}
+    cx+=adv(c,i)+tp});
+  return {left,width:w,size};
+}
+(()=>{const el=document.getElementById('brandMark');if(!el)return;const str='SENIORS BOGOTÁ';let x=0,paths='';
+  [...str].forEach((c,i)=>{if(c===' '){x+=300;return}const gl=LOGO_G[c];paths+=`<path transform="translate(${x} 0) scale(1 -1)" d="${gl.d}"/>`;x+=gl.a+40+(LOGO_K[c+(str[i+1]||'')]||0)});
+  el.outerHTML=`<svg role="img" aria-label="SENIORS BOGOTÁ" viewBox="0 -930 ${x} 960" style="height:26px;width:auto;display:block;fill:currentColor">${paths}</svg>`;})();
 
 /* ---------- text drawing ---------- */
 const capCache={};
@@ -231,9 +250,9 @@ function render(exporting=false){
   const L=st.logo, c1=L.cap/100*S, c2=c1*L.ratio/100;
   ctx.globalAlpha=L.opacity/100;
   const ly1=L.y/100*S+c1;
-  const r1=drawText(L.l1,{fk:'mono',weight:400,cap:c1,track:L.track1,x:L.x/100*S,y:ly1,align:'center'});
+  const r1=drawLogo(L.l1,{cap:c1,track:L.track1,x:L.x/100*S,y:ly1,align:'center'});
   const ly2=ly1+c1*L.gap*0.5+c2;
-  const r2=drawText(L.l2,{fk:'mono',weight:400,cap:c2,track:L.track2,x:L.x/100*S,y:ly2,align:'center'});
+  const r2=drawLogo(L.l2,{cap:c2,track:L.track2,x:L.x/100*S,y:ly2,align:'center'});
   boxes.push({id:'logo',x0:Math.min(r1.left,r2.left),y0:L.y/100*S,x1:Math.max(r1.left+r1.width,r2.left+r2.width),y1:ly2});
   metrics.logoBottom=ly2/S*100;
   ctx.globalAlpha=1;
@@ -343,7 +362,6 @@ slider(b,'logo.x','Posición X',0,100,0.1,'%');
 slider(b,'logo.y','Posición Y',0,95,0.1,'%');
 slider(b,'logo.opacity','Opacidad',10,100,1,'%');
 readout(b,'roLogo');
-const fn=document.createElement('div');fn.className='readout';fn.id='fontNote';b.appendChild(fn);
 
 // Reset
 const rs=document.createElement('div');rs.style.cssText='display:flex;justify-content:flex-end';
@@ -432,23 +450,6 @@ document.getElementById('btnExport').addEventListener('click',()=>{
     setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1000);say('PNG descargado.');
   },'image/png');
 });
-
-/* ---------- logotype font (each user loads their own copy) ---------- */
-let fontOK=false;
-function fontNote(){const e=document.getElementById('fontNote');if(!e)return;
-  e.innerHTML=fontOK?'Fuente del logotipo: <b>cargada</b>.':'La fuente Monohipster no viene incluida por su licencia de uso personal. Usa <b>Cargar fuente del logotipo</b> con tu archivo .ttf; queda guardada en este navegador.';}
-async function useFont(buf,persist){
-  try{const ff=new FontFace('Monohipster',buf);await ff.load();document.fonts.add(ff);fontOK=true;
-    for(const k in capCache)delete capCache[k];render();fontNote();
-    if(persist){try{let s='';const u=new Uint8Array(buf);for(let i=0;i<u.length;i+=0x8000)s+=String.fromCharCode.apply(null,u.subarray(i,i+0x8000));localStorage.setItem('flyerFont',btoa(s))}catch(e){}}
-    return true}catch(e){return false}
-}
-const fontIn=document.getElementById('fontFile');
-document.getElementById('btnFont').addEventListener('click',()=>fontIn.click());
-fontIn.addEventListener('change',async()=>{const f=fontIn.files[0];fontIn.value='';if(!f)return;
-  const ok=await useFont(await f.arrayBuffer(),true);say(ok?'Fuente del logotipo cargada.':'No se pudo leer ese archivo de fuente. Usa un .ttf u .otf.');});
-try{const s=localStorage.getItem('flyerFont');if(s){const bin=atob(s),u=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)u[i]=bin.charCodeAt(i);useFont(u.buffer,false)}}catch(e){}
-fontNote();
 
 /* ---------- fonts ---------- */
 render();
