@@ -1,0 +1,464 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>Flyer Hora Santa</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&family=Barlow:wght@300;400;500;600;700&family=Jost:wght@300;400;500;600;700&family=Unbounded:wght@400..900&display=swap">
+<style>
+
+/* Layout: lienzo cuadrado fijo a la izquierda, panel de controles a la derecha; se apilan en celular */
+:root{
+  --bg:#F2F1F4; --panel:#FFFFFF; --fg:#1C1A21; --muted:#6A6674; --line:#DDDAE3;
+  --accent:#8A6414; --accent-soft:#F3EAD6; --field:#F7F6F9;
+  --ui:"Barlow",system-ui,sans-serif; --mark:"Monohipster","Barlow",sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#121116; --panel:#1B1A20; --fg:#ECEAF0; --muted:#9C98A6; --line:#2E2C35;
+  --accent:#D6AA4E; --accent-soft:#2C2517; --field:#232129; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#121116; --panel:#1B1A20; --fg:#ECEAF0; --muted:#9C98A6; --line:#2E2C35;
+  --accent:#D6AA4E; --accent-soft:#2C2517; --field:#232129; color-scheme:dark}
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--ui);font-size:14px;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 40px}
+.app{max-width:1240px;margin:0 auto;display:grid;grid-template-columns:minmax(0,1fr) 400px;gap:24px;align-items:start}
+@media (max-width:920px){.app{grid-template-columns:minmax(0,1fr)}}
+
+header.top{max-width:1240px;margin:0 auto 16px;display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:8px 16px}
+.brand{font-family:var(--mark);font-size:26px;letter-spacing:.04em;line-height:1}
+.brand small{display:block;font-family:var(--ui);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-top:6px}
+.actions{display:flex;flex-wrap:wrap;gap:8px}
+
+.stage{position:sticky;top:max(16px,env(safe-area-inset-top,0px));display:flex;flex-direction:column;gap:10px;min-width:0}
+@media (max-width:920px){.stage{position:static}}
+.canvas-wrap{width:100%;max-width:760px;aspect-ratio:1;max-height:calc(100vh - 140px);margin:0 auto;position:relative}
+@media (max-width:920px){.canvas-wrap{max-height:none}}
+canvas#cv{width:100%;height:100%;display:block;border-radius:4px;background:#000;touch-action:none;cursor:grab;box-shadow:0 1px 0 var(--line),0 10px 30px rgba(0,0,0,.18)}
+canvas#cv.dragging{cursor:grabbing}
+canvas#cv.over-text{cursor:move}
+.canvas-wrap.drop canvas{outline:3px dashed var(--accent);outline-offset:4px}
+.hint{font-size:12.5px;color:var(--muted);text-align:center;max-width:760px;margin:0 auto;line-height:1.45}
+
+.panel{display:flex;flex-direction:column;gap:10px;min-width:0}
+details.sec{background:var(--panel);border:1px solid var(--line);border-radius:8px}
+details.sec>summary{list-style:none;cursor:pointer;padding:13px 16px;display:flex;align-items:center;justify-content:space-between;gap:8px;font-weight:600;font-size:13px;letter-spacing:.1em;text-transform:uppercase}
+details.sec>summary::-webkit-details-marker{display:none}
+details.sec>summary::after{content:"+";font-weight:400;font-size:18px;color:var(--muted)}
+details.sec[open]>summary::after{content:"–"}
+details.sec>summary .tag{margin-left:auto;font-size:11px;letter-spacing:.06em;font-weight:500;color:var(--accent);text-transform:none}
+.body{padding:2px 16px 16px;display:flex;flex-direction:column;gap:12px}
+.sub{border-top:1px solid var(--line);padding-top:12px;display:flex;flex-direction:column;gap:10px}
+.sub h4{margin:0;font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:600}
+
+.row{display:grid;grid-template-columns:118px minmax(0,1fr) 58px;align-items:center;gap:10px}
+.row label{font-size:13px;color:var(--muted)}
+.row output{font-variant-numeric:tabular-nums;font-size:12.5px;text-align:right;color:var(--fg)}
+.row.wide{grid-template-columns:118px minmax(0,1fr)}
+input[type=range]{width:100%;accent-color:var(--accent)}
+input[type=text],select{width:100%;font:inherit;font-size:14px;color:var(--fg);background:var(--field);border:1px solid var(--line);border-radius:6px;padding:8px 10px;min-width:0}
+input[type=text]:focus-visible,select:focus-visible,button:focus-visible,summary:focus-visible,input[type=range]:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.readout{font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
+.readout b{color:var(--accent);font-weight:600}
+
+button{font:inherit;font-size:13px;font-weight:600;letter-spacing:.04em;border-radius:6px;padding:9px 14px;cursor:pointer;border:1px solid var(--line);background:var(--panel);color:var(--fg)}
+button.primary{background:var(--accent);border-color:var(--accent);color:var(--panel)}
+button:hover{filter:brightness(1.05)}
+.toggle{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted);cursor:pointer}
+.toggle input{accent-color:var(--accent);width:16px;height:16px}
+.toast{min-height:18px;font-size:12.5px;color:var(--accent);text-align:center}
+@media (max-width:420px){.row{grid-template-columns:96px minmax(0,1fr) 52px}.row.wide{grid-template-columns:96px minmax(0,1fr)}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="brand">SENIORS BOGOTÁ<small>Editor de flyer · 1024 × 1024</small></div>
+  <div class="actions">
+    <input type="file" id="file" accept="image/*" hidden>
+    <input type="file" id="fontFile" accept=".ttf,.otf,.woff,.woff2,font/*" hidden>
+    <button id="btnFont">Cargar fuente del logotipo</button>
+    <button id="btnLoad">Cargar foto de fondo</button>
+    <button id="btnExport" class="primary">Descargar PNG</button>
+  </div>
+</header>
+
+<main class="app">
+  <section class="stage">
+    <div class="canvas-wrap" id="wrap"><canvas id="cv" width="1024" height="1024" aria-label="Vista previa del flyer"></canvas></div>
+    <p class="hint">Arrastra un texto para moverlo. Arrastra la foto (fuera de los textos) para reencuadrarla. También puedes soltar o pegar la imagen aquí.</p>
+    <div class="toast" id="toast" role="status"></div>
+  </section>
+
+  <aside class="panel" id="panel"></aside>
+</main>
+
+<script>
+(()=>{
+const S=1024;
+const cv=document.getElementById('cv'), ctx=cv.getContext('2d');
+const FONTS={
+  archivo:{fam:'"Archivo", sans-serif', name:'Archivo extendida', stretch:'expanded'},
+  unbounded:{fam:'"Unbounded", sans-serif', name:'Unbounded'},
+  archivoN:{fam:'"Archivo", sans-serif', name:'Archivo normal'},
+  jost:{fam:'"Jost", sans-serif', name:'Jost (estilo Futura)'},
+  barlow:{fam:'"Barlow", sans-serif', name:'Barlow (estilo DIN)'},
+  mono:{fam:'"Monohipster", sans-serif', name:'Monohipster'}
+};
+const DEFAULTS={
+  img:{darken:28,desat:25,zoom:1,px:50,py:50},
+  head:{text:'HORA SANTA',font:'archivo',weight:900,x:50,y:20.5,cap:7,track:-15,hscale:100,opacity:100},
+  info:{font:'jost',x:8,y:56,lh:1.6,lines:[
+    {text:'MIÉRCOLES 15 DE JULIO · 7:00 P.M.',weight:700,cap:2.6,opacity:100},
+    {text:'Previo, a las 6:00 p.m Eucaristía.',weight:300,cap:2.2,opacity:100},
+    {text:'COLEGIO NUESTRA SEÑORA DEL BUEN CONSEJO',weight:700,cap:2.6,opacity:100},
+    {text:'Calle 104 # 17-22.',weight:300,cap:1.9,opacity:80}]},
+  logo:{l1:'SENIORS',l2:'BOGOTÁ',x:50,y:84,cap:5,ratio:55,track1:60,track2:420,gap:1.6,opacity:100},
+  guides:true
+};
+const clone=o=>JSON.parse(JSON.stringify(o));
+let st=clone(DEFAULTS);
+try{const s=JSON.parse(localStorage.getItem('flyerHS')||'null'); if(s&&s.head&&s.info&&s.logo) st=Object.assign(clone(DEFAULTS),s);}catch(e){}
+const save=()=>{try{localStorage.setItem('flyerHS',JSON.stringify(st))}catch(e){}};
+
+let img=null, boxes=[], metrics={}, hover=null;
+const hasLS='letterSpacing' in ctx, hasFS='fontStretch' in ctx;
+
+/* ---------- path helpers ---------- */
+const getP=p=>p.split('.').reduce((o,k)=>o[k],st);
+const setP=(p,v)=>{const ks=p.split('.');const last=ks.pop();ks.reduce((o,k)=>o[k],st)[last]=v};
+
+/* ---------- text drawing ---------- */
+const capCache={};
+function setFont(fk,weight,size){
+  const f=FONTS[fk];
+  ctx.font=`${weight} ${size}px ${f.fam}`;
+  if(hasFS) ctx.fontStretch=f.stretch||'normal';
+}
+function capRatio(fk,weight){
+  const k=fk+weight; if(capCache[k]) return capCache[k];
+  setFont(fk,weight,200); const m=ctx.measureText('H');
+  const r=(m.actualBoundingBoxAscent||140)/200; capCache[k]=r; return r;
+}
+function textWidth(str,trackPx){
+  if(hasLS){ctx.letterSpacing=trackPx+'px';const w=ctx.measureText(str).width-trackPx;ctx.letterSpacing='0px';return w;}
+  let w=0;for(const ch of str) w+=ctx.measureText(ch).width; return w+trackPx*Math.max(0,[...str].length-1);
+}
+// draws text with baseline at y; align 'center' | 'left'; returns {left,width,size}
+function drawText(str,{fk,weight,cap,track,x,y,align,hscale=1}){
+  const size=cap/capRatio(fk,weight);
+  setFont(fk,weight,size);
+  const tp=track/1000*size;
+  const w=textWidth(str,tp)*hscale;
+  const left=align==='center'?x-w/2:x;
+  ctx.save();ctx.translate(left,y);ctx.scale(hscale,1);
+  if(hasLS){ctx.letterSpacing=tp+'px';ctx.fillText(str,0,0);ctx.letterSpacing='0px';}
+  else{let cx=0;for(const ch of str){ctx.fillText(ch,cx,0);cx+=ctx.measureText(ch).width+tp;}}
+  ctx.restore();
+  return {left,width:w,size};
+}
+
+/* ---------- background ---------- */
+let bgCanvas=document.createElement('canvas');bgCanvas.width=bgCanvas.height=S;
+let bgKey='';
+function geom(){
+  const s=Math.max(S/img.naturalWidth,S/img.naturalHeight)*st.img.zoom;
+  const dw=img.naturalWidth*s, dh=img.naturalHeight*s;
+  return {dw,dh,ox:(S-dw)*st.img.px/100,oy:(S-dh)*st.img.py/100};
+}
+function buildBg(){
+  const i=st.img, key=[img&&img.src.length,img&&img.src.slice(-40),i.darken,i.desat,i.zoom,i.px,i.py].join('|');
+  if(key===bgKey) return; bgKey=key;
+  const b=bgCanvas.getContext('2d');
+  b.clearRect(0,0,S,S);
+  if(!img){
+    b.fillStyle='#17141c';b.fillRect(0,0,S,S);
+    const g=b.createRadialGradient(S*.5,S*.42,10,S*.5,S*.42,S*.5);
+    g.addColorStop(0,'#6b5530');g.addColorStop(.35,'#3a2d22');g.addColorStop(1,'#17141c');
+    b.fillStyle=g;b.fillRect(0,0,S,S);
+    return;
+  }
+  const {dw,dh,ox,oy}=geom();
+  b.drawImage(img,ox,oy,dw,dh);
+  const d=b.getImageData(0,0,S,S),p=d.data,k=1-i.darken/100,ds=i.desat/100;
+  for(let n=0;n<p.length;n+=4){
+    const r=p[n],g=p[n+1],bl=p[n+2],l=.2126*r+.7152*g+.0722*bl;
+    p[n]=(r+(l-r)*ds)*k;p[n+1]=(g+(l-g)*ds)*k;p[n+2]=(bl+(l-bl)*ds)*k;
+  }
+  b.putImageData(d,0,0);
+}
+
+/* ---------- render ---------- */
+function render(exporting=false){
+  buildBg();
+  ctx.clearRect(0,0,S,S);
+  ctx.drawImage(bgCanvas,0,0);
+  if(!img&&!exporting){
+    ctx.fillStyle='rgba(255,255,255,.55)';setFont('barlow',500,22);ctx.textAlign='center';
+    ctx.fillText('Carga o suelta aquí la foto de fondo',S/2,S*.45);ctx.textAlign='left';
+  }
+  if(st.guides&&!exporting) drawGuides();
+  ctx.textBaseline='alphabetic';ctx.fillStyle='#FFFFFF';boxes=[];
+
+  // 1. Headline
+  const h=st.head, hc=h.cap/100*S;
+  ctx.globalAlpha=h.opacity/100;
+  const hy=h.y/100*S+hc/2;
+  const hr=drawText(h.text,{fk:h.font,weight:h.weight,cap:hc,track:h.track,x:h.x/100*S,y:hy,align:'center',hscale:h.hscale/100});
+  boxes.push({id:'head',x0:hr.left,y0:hy-hc,x1:hr.left+hr.width,y1:hy});
+  metrics.head=hr.width/S*100;
+
+  // 2. Info
+  const inf=st.info; let base=inf.y/100*S, minX=1e9,maxX=-1e9, top=base;
+  inf.lines.forEach((ln,i)=>{
+    const c=ln.cap/100*S;
+    if(i===0){base+=c}else{base+=inf.lh*c/capRatio(inf.font,ln.weight)}
+    ctx.globalAlpha=ln.opacity/100;
+    const r=drawText(ln.text,{fk:inf.font,weight:ln.weight,cap:c,track:0,x:inf.x/100*S,y:base,align:'left'});
+    minX=Math.min(minX,r.left);maxX=Math.max(maxX,r.left+r.width);
+    metrics['line'+i]=r.width/S*100;
+  });
+  boxes.push({id:'info',x0:minX,y0:top,x1:maxX,y1:base+S*.006});
+  metrics.infoBottom=base/S*100;
+
+  // 3. Logo
+  const L=st.logo, c1=L.cap/100*S, c2=c1*L.ratio/100;
+  ctx.globalAlpha=L.opacity/100;
+  const ly1=L.y/100*S+c1;
+  const r1=drawText(L.l1,{fk:'mono',weight:400,cap:c1,track:L.track1,x:L.x/100*S,y:ly1,align:'center'});
+  const ly2=ly1+c1*L.gap*0.5+c2;
+  const r2=drawText(L.l2,{fk:'mono',weight:400,cap:c2,track:L.track2,x:L.x/100*S,y:ly2,align:'center'});
+  boxes.push({id:'logo',x0:Math.min(r1.left,r2.left),y0:L.y/100*S,x1:Math.max(r1.left+r1.width,r2.left+r2.width),y1:ly2});
+  metrics.logoBottom=ly2/S*100;
+  ctx.globalAlpha=1;
+
+  if(!exporting){
+    const b=boxes.find(b=>b.id===(drag&&drag.id)||b.id===hover);
+    if(b){ctx.save();ctx.strokeStyle='rgba(214,170,78,.95)';ctx.lineWidth=2;ctx.setLineDash([8,6]);
+      ctx.strokeRect(b.x0-10,b.y0-10,b.x1-b.x0+20,b.y1-b.y0+20);ctx.restore();}
+  }
+  updateReadouts();
+}
+function drawGuides(){
+  ctx.save();
+  const band=(a,b,lab)=>{ctx.fillStyle='rgba(120,190,255,.08)';ctx.fillRect(0,a/100*S,S,(b-a)/100*S);
+    ctx.strokeStyle='rgba(120,190,255,.45)';ctx.setLineDash([6,6]);ctx.lineWidth=1;
+    [a,b].forEach(v=>{ctx.beginPath();ctx.moveTo(0,v/100*S+.5);ctx.lineTo(S,v/100*S+.5);ctx.stroke()});
+    ctx.setLineDash([]);ctx.fillStyle='rgba(160,210,255,.8)';setFont('barlow',500,13);ctx.textAlign='right';ctx.fillText(lab,S-8,a/100*S+16);ctx.textAlign='left';};
+  band(16,25,'Título 16–25 %');band(56,79,'Información 56–79 %');band(84,95,'Logotipo 84–95 %');
+  ctx.strokeStyle='rgba(120,190,255,.35)';ctx.setLineDash([3,7]);
+  ctx.beginPath();ctx.moveTo(S*.08+.5,0);ctx.lineTo(S*.08+.5,S);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(S/2+.5,0);ctx.lineTo(S/2+.5,S);ctx.stroke();
+  ctx.restore();
+}
+let raf=0;const draw=()=>{if(!raf)raf=requestAnimationFrame(()=>{raf=0;render()})};
+
+/* ---------- controls ---------- */
+const panel=document.getElementById('panel'); const bound=[];
+let uid=0;
+function sec(title,tag,open){const d=document.createElement('details');d.className='sec';if(open)d.open=true;
+  d.innerHTML=`<summary>${title}${tag?`<span class="tag">${tag}</span>`:''}</summary><div class="body"></div>`;panel.appendChild(d);return d.querySelector('.body');}
+function sub(parent,title){const s=document.createElement('div');s.className='sub';if(title)s.innerHTML=`<h4>${title}</h4>`;parent.appendChild(s);return s;}
+function slider(parent,path,label,min,max,step,unit=''){
+  const id='c'+(uid++);const r=document.createElement('div');r.className='row';
+  r.innerHTML=`<label for="${id}">${label}</label><input type="range" id="${id}" min="${min}" max="${max}" step="${step}"><output></output>`;
+  parent.appendChild(r);const inp=r.querySelector('input'),out=r.querySelector('output');
+  const dec=(String(step).split('.')[1]||'').length;
+  const sync=()=>{const v=getP(path);inp.value=v;out.textContent=(+v).toFixed(dec)+unit};
+  inp.addEventListener('input',()=>{setP(path,+inp.value);out.textContent=(+inp.value).toFixed(dec)+unit;if(path.startsWith('img'))bgKey='';save();draw()});
+  bound.push(sync);sync();
+}
+function text(parent,path,label){
+  const id='c'+(uid++);const r=document.createElement('div');r.className='row wide';
+  r.innerHTML=`<label for="${id}">${label}</label><input type="text" id="${id}" spellcheck="false">`;
+  parent.appendChild(r);const inp=r.querySelector('input');
+  inp.addEventListener('input',()=>{setP(path,inp.value);save();draw()});
+  bound.push(()=>{if(document.activeElement!==inp)inp.value=getP(path)});bound.at(-1)();
+}
+function select(parent,path,label,opts,num){
+  const id='c'+(uid++);const r=document.createElement('div');r.className='row wide';
+  r.innerHTML=`<label for="${id}">${label}</label><select id="${id}">${opts.map(([v,t])=>`<option value="${v}">${t}</option>`).join('')}</select>`;
+  parent.appendChild(r);const s=r.querySelector('select');
+  s.addEventListener('change',()=>{setP(path,num?+s.value:s.value);save();draw()});
+  bound.push(()=>{s.value=getP(path)});bound.at(-1)();
+}
+function readout(parent,id){const p=document.createElement('div');p.className='readout';p.id=id;parent.appendChild(p);}
+const syncAll=()=>bound.forEach(f=>f());
+
+// Fondo
+let b=sec('Fondo','foto',true);
+slider(b,'img.darken','Oscurecer',0,70,1,'%');
+slider(b,'img.desat','Desaturar',0,100,1,'%');
+slider(b,'img.zoom','Zoom',1,3,0.01,'×');
+slider(b,'img.px','Encuadre X',0,100,0.5,'%');
+slider(b,'img.py','Encuadre Y',0,100,0.5,'%');
+const tg=document.createElement('label');tg.className='toggle';tg.innerHTML='<input type="checkbox" id="guides"> Mostrar guías (no salen en el PNG)';b.appendChild(tg);
+const gch=tg.querySelector('input');gch.checked=st.guides;gch.addEventListener('change',()=>{st.guides=gch.checked;save();draw()});
+
+// Título
+b=sec('1 · Título','HORA SANTA',true);
+text(b,'head.text','Texto');
+select(b,'head.font','Fuente',[['archivo','Archivo extendida'],['unbounded','Unbounded'],['archivoN','Archivo normal']]);
+select(b,'head.weight','Peso',[[600,'Seminegrita'],[700,'Negrita'],[800,'Extranegrita'],[900,'Black']],true);
+slider(b,'head.cap','Altura mayúsc.',3,14,0.1,'%');
+slider(b,'head.track','Espaciado',-80,200,1);
+slider(b,'head.hscale','Ancho letra',80,140,1,'%');
+slider(b,'head.x','Posición X',0,100,0.1,'%');
+slider(b,'head.y','Posición Y',0,95,0.1,'%');
+slider(b,'head.opacity','Opacidad',10,100,1,'%');
+readout(b,'roHead');
+
+// Info
+b=sec('2 · Información','4 líneas',true);
+select(b,'info.font','Fuente',[['jost','Jost (estilo Futura)'],['barlow','Barlow (estilo DIN)']]);
+slider(b,'info.x','Margen izq. X',0,60,0.1,'%');
+slider(b,'info.y','Inicio Y',0,95,0.1,'%');
+slider(b,'info.lh','Interlineado',1,3,0.05,'');
+readout(b,'roInfo');
+const W=[[300,'Light'],[400,'Regular'],[500,'Medium'],[600,'Seminegrita'],[700,'Negrita']];
+['Fecha y hora','Eucaristía previa','Lugar','Dirección'].forEach((t,i)=>{
+  const s=sub(b,`Línea ${i+1} · ${t}`);
+  text(s,`info.lines.${i}.text`,'Texto');
+  select(s,`info.lines.${i}.weight`,'Peso',W,true);
+  slider(s,`info.lines.${i}.cap`,'Altura mayúsc.',1,5,0.05,'%');
+  slider(s,`info.lines.${i}.opacity`,'Opacidad',10,100,1,'%');
+});
+
+// Logo
+b=sec('3 · Logotipo','Monohipster',true);
+text(b,'logo.l1','Línea 1');
+text(b,'logo.l2','Línea 2');
+slider(b,'logo.cap','Altura línea 1',2,10,0.05,'%');
+slider(b,'logo.ratio','Línea 2 vs 1',30,100,1,'%');
+slider(b,'logo.track1','Espaciado 1',-50,400,1);
+slider(b,'logo.track2','Espaciado 2',0,900,5);
+slider(b,'logo.gap','Separación',0,4,0.05,'');
+slider(b,'logo.x','Posición X',0,100,0.1,'%');
+slider(b,'logo.y','Posición Y',0,95,0.1,'%');
+slider(b,'logo.opacity','Opacidad',10,100,1,'%');
+readout(b,'roLogo');
+const fn=document.createElement('div');fn.className='readout';fn.id='fontNote';b.appendChild(fn);
+
+// Reset
+const rs=document.createElement('div');rs.style.cssText='display:flex;justify-content:flex-end';
+rs.innerHTML='<button id="btnReset">Restablecer textos y posiciones</button>';panel.appendChild(rs);
+const btnReset=document.getElementById('btnReset');let armed=false;
+btnReset.addEventListener('click',()=>{
+  if(!armed){armed=true;btnReset.textContent='Toca otra vez para confirmar';setTimeout(()=>{armed=false;btnReset.textContent='Restablecer textos y posiciones'},3000);return}
+  const keepImg=st.img;st=clone(DEFAULTS);st.img=keepImg;armed=false;btnReset.textContent='Restablecer textos y posiciones';
+  gch.checked=st.guides;save();syncAll();draw();
+});
+
+function updateReadouts(){
+  const f=v=>v.toFixed(1)+' %';
+  const e=id=>document.getElementById(id);
+  if(e('roHead'))e('roHead').innerHTML=`Ancho del título: <b>${f(metrics.head)}</b> del lienzo (meta ≈ 65 %)`;
+  if(e('roInfo'))e('roInfo').innerHTML=`Ancho línea de fecha: <b>${f(metrics.line0)}</b> (meta ≈ 60 %) · termina en Y <b>${f(metrics.infoBottom)}</b> (meta ≤ 79 %)`;
+  if(e('roLogo'))e('roLogo').innerHTML=`Logotipo termina en Y <b>${f(metrics.logoBottom)}</b> (meta ≤ 95 %)`;
+}
+
+/* ---------- canvas interaction ---------- */
+let drag=null;
+const toCanvas=e=>{const r=cv.getBoundingClientRect();return{x:(e.clientX-r.left)/r.width*S,y:(e.clientY-r.top)/r.height*S}};
+const hit=p=>{for(let i=boxes.length-1;i>=0;i--){const b=boxes[i];if(p.x>=b.x0-14&&p.x<=b.x1+14&&p.y>=b.y0-14&&p.y<=b.y1+14)return b.id}return null};
+cv.addEventListener('pointerdown',e=>{
+  const p=toCanvas(e);const id=hit(p);
+  if(id){const o=st[id];drag={id,sx:p.x,sy:p.y,ox:o.x,oy:o.y}}
+  else if(img){const g=geom();drag={id:null,sx:p.x,sy:p.y,px:st.img.px,py:st.img.py,g}}
+  else return;
+  cv.setPointerCapture(e.pointerId);cv.classList.add('dragging');
+});
+cv.addEventListener('pointermove',e=>{
+  const p=toCanvas(e);
+  if(!drag){const h=hit(p);if(h!==hover){hover=h;cv.classList.toggle('over-text',!!h);draw()}return}
+  const dx=p.x-drag.sx,dy=p.y-drag.sy;
+  if(drag.id){
+    const o=st[drag.id];let nx=drag.ox+dx/S*100;
+    if(drag.id!=='info'&&Math.abs(nx-50)<0.8)nx=50;
+    if(drag.id==='info'&&Math.abs(nx-8)<0.6)nx=8;
+    o.x=Math.round(Math.min(100,Math.max(0,nx))*10)/10;
+    o.y=Math.round(Math.min(95,Math.max(0,drag.oy+dy/S*100))*10)/10;
+  }else{
+    const g=drag.g;
+    if(g.dw>S)st.img.px=Math.min(100,Math.max(0,drag.px+dx/(S-g.dw)*100));
+    if(g.dh>S)st.img.py=Math.min(100,Math.max(0,drag.py+dy/(S-g.dh)*100));
+    bgKey='';
+  }
+  syncAll();draw();
+});
+const end=()=>{if(drag){drag=null;cv.classList.remove('dragging');save();draw()}};
+cv.addEventListener('pointerup',end);cv.addEventListener('pointercancel',end);
+cv.addEventListener('pointerleave',()=>{if(!drag&&hover){hover=null;draw()}});
+
+/* ---------- image loading ---------- */
+const toast=document.getElementById('toast');
+const say=m=>{toast.textContent=m;clearTimeout(say.t);say.t=setTimeout(()=>toast.textContent='',4000)};
+function loadFile(f){
+  if(!f||!f.type.startsWith('image/')){say('Ese archivo no es una imagen. Usa JPG, PNG o WebP.');return}
+  const r=new FileReader();r.onload=()=>{const im=new Image();im.onload=()=>{img=im;st.img.zoom=1;st.img.px=50;st.img.py=50;bgKey='';syncAll();save();draw();say('Foto cargada. Arrástrala para reencuadrar.')};
+    im.onerror=()=>say('No se pudo leer la imagen.');im.src=r.result};r.readAsDataURL(f);
+}
+const fileIn=document.getElementById('file');
+document.getElementById('btnLoad').addEventListener('click',()=>fileIn.click());
+fileIn.addEventListener('change',()=>{loadFile(fileIn.files[0]);fileIn.value=''});
+const wrap=document.getElementById('wrap');
+['dragenter','dragover'].forEach(t=>wrap.addEventListener(t,e=>{e.preventDefault();wrap.classList.add('drop')}));
+['dragleave','drop'].forEach(t=>wrap.addEventListener(t,e=>{e.preventDefault();wrap.classList.remove('drop')}));
+wrap.addEventListener('drop',e=>loadFile(e.dataTransfer.files[0]));
+document.addEventListener('paste',e=>{const it=[...(e.clipboardData?.items||[])].find(i=>i.type.startsWith('image/'));if(it)loadFile(it.getAsFile())});
+
+/* ---------- export ---------- */
+let downloads=null;
+if(window.claude&&claude.use){claude.use('downloads').then(d=>{downloads=d}).catch(()=>{})}
+document.getElementById('btnExport').addEventListener('click',()=>{
+  if(!img)say('Aún no hay foto de fondo: se exporta con el fondo de muestra.');
+  render(true);
+  cv.toBlob(async blob=>{
+    render();
+    if(!blob){say('No se pudo generar el PNG.');return}
+    const filename='hora-santa-seniors-bogota.png';
+    if(downloads){
+      try{await downloads.save({filename,data:blob});say('PNG listo.')}
+      catch(err){if(err&&err.code==='declined')say('Descarga cancelada.');else say('No se pudo descargar aquí. Abre el editor en el navegador e inténtalo de nuevo.')}
+      return;
+    }
+    const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=filename;document.body.appendChild(a);a.click();
+    setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1000);say('PNG descargado.');
+  },'image/png');
+});
+
+/* ---------- logotype font (each user loads their own copy) ---------- */
+let fontOK=false;
+function fontNote(){const e=document.getElementById('fontNote');if(!e)return;
+  e.innerHTML=fontOK?'Fuente del logotipo: <b>cargada</b>.':'La fuente Monohipster no viene incluida por su licencia de uso personal. Usa <b>Cargar fuente del logotipo</b> con tu archivo .ttf; queda guardada en este navegador.';}
+async function useFont(buf,persist){
+  try{const ff=new FontFace('Monohipster',buf);await ff.load();document.fonts.add(ff);fontOK=true;
+    for(const k in capCache)delete capCache[k];render();fontNote();
+    if(persist){try{let s='';const u=new Uint8Array(buf);for(let i=0;i<u.length;i+=0x8000)s+=String.fromCharCode.apply(null,u.subarray(i,i+0x8000));localStorage.setItem('flyerFont',btoa(s))}catch(e){}}
+    return true}catch(e){return false}
+}
+const fontIn=document.getElementById('fontFile');
+document.getElementById('btnFont').addEventListener('click',()=>fontIn.click());
+fontIn.addEventListener('change',async()=>{const f=fontIn.files[0];fontIn.value='';if(!f)return;
+  const ok=await useFont(await f.arrayBuffer(),true);say(ok?'Fuente del logotipo cargada.':'No se pudo leer ese archivo de fuente. Usa un .ttf u .otf.');});
+try{const s=localStorage.getItem('flyerFont');if(s){const bin=atob(s),u=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)u[i]=bin.charCodeAt(i);useFont(u.buffer,false)}}catch(e){}
+fontNote();
+
+/* ---------- fonts ---------- */
+render();
+const loads=['900 50px Archivo','800 50px Archivo','700 50px Archivo','600 50px Archivo','800 50px Unbounded','900 50px Unbounded','700 50px Unbounded','600 50px Unbounded',
+ '300 50px Jost','400 50px Jost','500 50px Jost','600 50px Jost','700 50px Jost','300 50px Barlow','400 50px Barlow','500 50px Barlow','600 50px Barlow','700 50px Barlow']
+ .map(f=>document.fonts.load(f,'HORA SANTA BOGOTÁ 0123').catch(()=>{}));
+Promise.all(loads).then(()=>{for(const k in capCache)delete capCache[k];render()});
+document.fonts.addEventListener&&document.fonts.addEventListener('loadingdone',()=>{for(const k in capCache)delete capCache[k];draw()});
+})();
+</script>
+
+</body>
+</html>
